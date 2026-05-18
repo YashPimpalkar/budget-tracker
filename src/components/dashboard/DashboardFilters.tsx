@@ -88,23 +88,23 @@ export function DashboardFilters({
 
         {/* Date Range Selectors (Visible for range) */}
         {type === 'total' && (
-          <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2 duration-300">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">From</span>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto animate-in fade-in slide-in-from-left-2 duration-300">
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider min-w-[36px]">From</span>
               <input
                 type="date"
                 value={from}
                 onChange={(e) => setFrom(e.target.value)}
-                className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-zinc-500/20 transition-all dark:text-white dark:color-scheme-dark"
+                className="w-full sm:w-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-zinc-500/20 transition-all dark:text-white dark:color-scheme-dark"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">To</span>
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider min-w-[36px]">To</span>
               <input
                 type="date"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
-                className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-zinc-500/20 transition-all dark:text-white dark:color-scheme-dark"
+                className="w-full sm:w-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-zinc-500/20 transition-all dark:text-white dark:color-scheme-dark"
               />
             </div>
           </div>
