@@ -7,6 +7,7 @@ import { Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { transactionService } from '@/services/transactionService';
 
 export default function TransactionList() {
   const queryClient = useQueryClient();
@@ -15,18 +16,11 @@ export default function TransactionList() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['transactions', page],
-    queryFn: async () => {
-      const res = await fetch(`/api/transactions?page=${page}&limit=${limit}`);
-      return res.json();
-    },
+    queryFn: () => transactionService.getTransactions(page, limit),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete');
-      return res.json();
-    },
+    mutationFn: (id: string) => transactionService.deleteTransaction(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });

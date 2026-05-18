@@ -6,15 +6,14 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { toast } from 'sonner';
+import { budgetService } from '@/services/budgetService';
+import { transactionService } from '@/services/transactionService';
 
 export default function TransactionForm() {
   const queryClient = useQueryClient();
   const { data: budgets } = useQuery({
     queryKey: ['budgets'],
-    queryFn: async () => {
-      const res = await fetch('/api/budgets');
-      return res.json();
-    },
+    queryFn: () => budgetService.getBudgets(),
   });
 
   const [formData, setFormData] = useState({
@@ -26,15 +25,7 @@ export default function TransactionForm() {
   });
 
   const mutation = useMutation({
-    mutationFn: async (newTx: typeof formData) => {
-      const res = await fetch('/api/transactions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newTx),
-      });
-      if (!res.ok) throw new Error('Failed to create transaction');
-      return res.json();
-    },
+    mutationFn: (newTx: typeof formData) => transactionService.createTransaction(newTx),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['budgets'] });

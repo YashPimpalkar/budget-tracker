@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { RotateCcw, Search, ChevronLeft, ChevronRight, Mail, IndianRupee } from 'lucide-react';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
+import { adminService } from '@/services/adminService';
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -42,30 +43,16 @@ export default function AdminPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-deleted-data', page, appliedFilters],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '5',
-        email: appliedFilters.email,
-        minAmount: appliedFilters.minAmount || '0',
-        maxAmount: appliedFilters.maxAmount || '1000000000',
-      });
-      const res = await fetch(`/api/admin/recover?${params}`);
-      if (!res.ok) throw new Error('Failed to fetch');
-      return res.json();
-    },
+    queryFn: () => adminService.getDeletedItems({
+      page,
+      email: appliedFilters.email,
+      minAmount: appliedFilters.minAmount || '0',
+      maxAmount: appliedFilters.maxAmount || '1000000000',
+    }),
   });
 
   const recoverMutation = useMutation({
-    mutationFn: async ({ type, id }: { type: string, id: string }) => {
-      const res = await fetch('/api/admin/recover', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, id }),
-      });
-      if (!res.ok) throw new Error('Failed to recover');
-      return res.json();
-    },
+    mutationFn: ({ type, id }: { type: 'transaction' | 'budget'; id: string }) => adminService.recoverItem(type, id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-deleted-data'] });
       toast.success('Data recovered successfully');
@@ -145,8 +132,8 @@ export default function AdminPage() {
           </CardHeader>
           <CardContent className="flex-1 flex flex-col">
             <div className="space-y-4 flex-1">
-              {data?.transactions?.length > 0 ? (
-                data.transactions.map((tx: { _id: string; category: string; amount: number; userId?: { email: string }; updatedAt: string }) => (
+              {(data?.transactions?.length ?? 0) > 0 ? (
+                data?.transactions?.map((tx: { _id: string; category: string; amount: number; userId?: { email: string }; updatedAt: string }) => (
                   <div key={tx._id} className="flex flex-col gap-2 p-4 border rounded-lg border-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50">
                     <div className="flex items-center justify-between">
                       <div>
@@ -209,8 +196,8 @@ export default function AdminPage() {
           </CardHeader>
           <CardContent className="flex-1 flex flex-col">
             <div className="space-y-4 flex-1">
-              {data?.budgets?.length > 0 ? (
-                data.budgets.map((b: { _id: string; category: string; limit: number; userId?: { email: string }; month: number; year: number }) => (
+              {(data?.budgets?.length ?? 0) > 0 ? (
+                data?.budgets?.map((b: { _id: string; category: string; limit: number; userId?: { email: string }; month: number; year: number }) => (
                   <div key={b._id} className="flex items-center justify-between p-4 border rounded-lg border-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50">
                     <div>
                       <p className="font-medium dark:text-white">{b.category} - Limit: ₹{b.limit}</p>

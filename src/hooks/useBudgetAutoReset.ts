@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { budgetService } from '@/services/budgetService';
 
 /**
  * Silently triggers the monthly budget auto-reset on the first dashboard
@@ -17,8 +18,7 @@ export function useBudgetAutoReset() {
 
     if (localStorage.getItem(resetKey)) return; // Already ran this month
 
-    fetch('/api/budgets/auto-reset', { method: 'POST' })
-      .then((res) => res.json())
+    budgetService.autoResetBudgets()
       .then((data) => {
         if (data.copied > 0) {
           // Invalidate so the Budgets page / bell reflects the new entries

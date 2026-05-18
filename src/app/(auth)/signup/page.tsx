@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { toast } from 'sonner';
+import { authService } from '@/services/authService';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -22,23 +23,13 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success('Account created! Please login.');
-        router.push('/login');
-      } else {
-        toast.error(data.message || 'Something went wrong');
-      }
+      await authService.signUp(formData);
+      toast.success('Account created! Please login.');
+      router.push('/login');
     } catch (error) {
       console.error('Signup error:', error);
-      toast.error('An error occurred. Please try again.');
+      const errMsg = error instanceof Error ? error.message : 'An error occurred. Please try again.';
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }

@@ -9,6 +9,7 @@ import { toggleTheme } from '@/store/slices/uiSlice';
 import { Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { userService } from '@/services/userService';
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -34,12 +35,8 @@ export default function SettingsPage() {
 
     setResetLoading(true);
     try {
-      const res = await fetch('/api/user/reset', { method: 'POST' });
-      if (res.ok) {
-        toast.success('All data has been reset');
-      } else {
-        toast.error('Failed to reset data');
-      }
+      await userService.resetUserData();
+      toast.success('All data has been reset');
     } catch (error) {
       console.error('Settings reset error:', error);
       toast.error('An error occurred');

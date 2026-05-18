@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { budgetService } from '@/services/budgetService';
 
 /**
  * Silently fetches the current month's budgets and fires a toast alert
@@ -12,10 +13,7 @@ import { toast } from 'sonner';
 export default function BudgetAlertChecker() {
   const { data: budgets } = useQuery({
     queryKey: ['budgets'],
-    queryFn: async () => {
-      const res = await fetch('/api/budgets');
-      return res.json();
-    },
+    queryFn: () => budgetService.getBudgets(),
     // Re-check every 5 minutes in case new transactions come in
     refetchInterval: 5 * 60 * 1000,
   });

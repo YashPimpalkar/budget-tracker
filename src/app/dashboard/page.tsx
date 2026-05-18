@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { DashboardFilters } from '@/components/dashboard/DashboardFilters';
+import { dashboardService } from '@/services/dashboardService';
 
 const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
 const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
@@ -31,17 +32,13 @@ export default function DashboardPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-stats', timeframe, month, year, from, to],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        type: timeframe,
-        month: month.toString(),
-        year: year.toString(),
-        from,
-        to
-      });
-      const res = await fetch(`/api/dashboard/stats?${params.toString()}`);
-      return res.json();
-    },
+    queryFn: () => dashboardService.getStats({
+      type: timeframe,
+      month: month.toString(),
+      year: year.toString(),
+      from,
+      to,
+    }),
   });
 
   if (isLoading) {
@@ -200,8 +197,8 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {data?.recentTransactions?.length > 0 ? (
-                data.recentTransactions.map((tx: { _id: string; category: string; date: string; type: 'income' | 'expense'; amount: number }) => (
+              {(data?.recentTransactions?.length ?? 0) > 0 ? (
+                data?.recentTransactions?.map((tx: { _id: string; category: string; date: string; type: 'income' | 'expense'; amount: number }) => (
                   <div key={tx._id} className="flex items-center justify-between group">
                     <div>
                       <p className="text-sm font-medium dark:text-zinc-200">{tx.category}</p>

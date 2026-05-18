@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { toast } from 'sonner';
+import { budgetService } from '@/services/budgetService';
 import { cn } from '@/lib/utils';
 
 export default function BudgetsPage() {
@@ -14,21 +15,12 @@ export default function BudgetsPage() {
 
   const { data: budgets, isLoading } = useQuery({
     queryKey: ['budgets'],
-    queryFn: async () => {
-      const res = await fetch('/api/budgets');
-      return res.json();
-    },
+    queryFn: () => budgetService.getBudgets(),
   });
 
   const mutation = useMutation({
-    mutationFn: async (budget: typeof newBudget) => {
-      const res = await fetch('/api/budgets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...budget, limit: Number(budget.limit) }),
-      });
-      return res.json();
-    },
+    mutationFn: (budget: typeof newBudget) =>
+      budgetService.createOrUpdateBudget({ ...budget, limit: Number(budget.limit) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
       toast.success('Budget updated');
@@ -37,10 +29,7 @@ export default function BudgetsPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/budgets?id=${id}`, { method: 'DELETE' });
-      return res.json();
-    },
+    mutationFn: (id: string) => budgetService.deleteBudget(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
       toast.success('Budget deleted');

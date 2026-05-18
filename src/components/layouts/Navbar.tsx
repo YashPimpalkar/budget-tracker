@@ -6,6 +6,7 @@ import { toggleSidebar, toggleTheme } from '@/store/slices/uiSlice';
 import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { budgetService } from '@/services/budgetService';
 
 export default function Navbar() {
   const dispatch = useAppDispatch();
@@ -17,10 +18,7 @@ export default function Navbar() {
   /** Fetch current-month budgets to detect exceeded ones */
   const { data: budgets } = useQuery({
     queryKey: ['budgets'],
-    queryFn: async () => {
-      const res = await fetch('/api/budgets');
-      return res.json();
-    },
+    queryFn: () => budgetService.getBudgets(),
     refetchInterval: 5 * 60 * 1000,
   });
 
