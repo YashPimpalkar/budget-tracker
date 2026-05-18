@@ -20,7 +20,7 @@ export default function Sidebar() {
   const isOpen = useAppSelector((state) => state.ui.isSidebarOpen);
   const dispatch = useAppDispatch();
 
-  const filteredItems = menuItems.filter(item => !item.role || (session?.user as any)?.role === item.role);
+  const filteredItems = menuItems.filter(item => !item.role || (session?.user as { role?: string })?.role === item.role);
 
   return (
     <>

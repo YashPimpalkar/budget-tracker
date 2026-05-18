@@ -92,7 +92,7 @@ export default function BudgetsPage() {
         </Card>
 
         <div className="lg:col-span-2 space-y-4">
-          {budgets?.map((b: any) => {
+          {budgets?.map((b: { _id: string; category: string; spent: number; limit: number }) => {
             const percent = Math.min((b.spent / b.limit) * 100, 100);
             return (
               <Card key={b._id} className="dark:glow-border-white">

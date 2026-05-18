@@ -13,7 +13,7 @@ export async function POST() {
     }
 
     await connectDB();
-    const userId = (session.user as any).id;
+    const userId = (session.user as { id: string }).id;
 
     // Soft delete all transactions and budgets for this user
     await Transaction.updateMany({ userId }, { isDeleted: true });

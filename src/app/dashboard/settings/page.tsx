@@ -6,12 +6,12 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleTheme } from '@/store/slices/uiSlice';
-import { Moon, Sun, User as UserIcon } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   const theme = useAppSelector((state) => state.ui.theme);
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -41,6 +41,7 @@ export default function SettingsPage() {
         toast.error('Failed to reset data');
       }
     } catch (error) {
+      console.error('Settings reset error:', error);
       toast.error('An error occurred');
     } finally {
       setResetLoading(false);

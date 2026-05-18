@@ -25,7 +25,7 @@ export async function POST() {
     const currentMonth = now.getMonth() + 1; // 1-based
     const currentYear = now.getFullYear();
 
-    const userId = (session.user as any).id;
+    const userId = (session.user as { id: string }).id;
 
     // Check if current month already has budgets — if yes, nothing to do
     const existing = await Budget.countDocuments({
@@ -72,6 +72,7 @@ export async function POST() {
       copied: newBudgets.length,
     });
   } catch (error) {
+    console.error('Budget auto-reset error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }

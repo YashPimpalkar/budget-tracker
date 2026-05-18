@@ -36,7 +36,7 @@ export default function AdminPage() {
     setPage(1);
   };
 
-  if (status === 'unauthenticated' || (session?.user as any)?.role !== 'ADMIN') {
+  if (status === 'unauthenticated' || (session?.user as { role?: string })?.role !== 'ADMIN') {
     redirect('/dashboard');
   }
 
@@ -146,7 +146,7 @@ export default function AdminPage() {
           <CardContent className="flex-1 flex flex-col">
             <div className="space-y-4 flex-1">
               {data?.transactions?.length > 0 ? (
-                data.transactions.map((tx: any) => (
+                data.transactions.map((tx: { _id: string; category: string; amount: number; userId?: { email: string }; updatedAt: string }) => (
                   <div key={tx._id} className="flex flex-col gap-2 p-4 border rounded-lg border-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50">
                     <div className="flex items-center justify-between">
                       <div>
@@ -210,7 +210,7 @@ export default function AdminPage() {
           <CardContent className="flex-1 flex flex-col">
             <div className="space-y-4 flex-1">
               {data?.budgets?.length > 0 ? (
-                data.budgets.map((b: any) => (
+                data.budgets.map((b: { _id: string; category: string; limit: number; userId?: { email: string }; month: number; year: number }) => (
                   <div key={b._id} className="flex items-center justify-between p-4 border rounded-lg border-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50">
                     <div>
                       <p className="font-medium dark:text-white">{b.category} - Limit: ₹{b.limit}</p>

@@ -36,6 +36,7 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast.error('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -78,7 +79,7 @@ export default function LoginPage() {
               {loading ? 'Logging in...' : 'Login'}
             </Button>
             <p className="text-sm text-zinc-500">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" className="text-black underline dark:text-white">
                 Sign up
               </Link>

@@ -26,7 +26,7 @@ export async function GET() {
     });
 
     return NextResponse.json({ message: 'Admin user seeded successfully' });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Seeding error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }

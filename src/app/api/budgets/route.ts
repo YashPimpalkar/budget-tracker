@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const month = parseInt(searchParams.get('month') || (new Date().getMonth() + 1).toString());
     const year = parseInt(searchParams.get('year') || new Date().getFullYear().toString());
 
-    const userId = new mongoose.Types.ObjectId((session.user as any).id);
+    const userId = new mongoose.Types.ObjectId((session.user as { id: string }).id);
 
     // Get all budgets for the user for this month
     const budgets = await Budget.find({ userId, month, year, isDeleted: false });
@@ -56,6 +56,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(result);
   } catch (error) {
+    console.error('Budgets GET error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
@@ -78,14 +79,14 @@ export async function POST(req: Request) {
     let budget;
     if (id) {
       budget = await Budget.findOneAndUpdate(
-        { _id: id, userId: (session.user as any).id },
+        { _id: id, userId: (session.user as { id: string }).id },
         { category, limit, isDeleted: false },
         { new: true }
       );
     } else {
       budget = await Budget.findOneAndUpdate(
         {
-          userId: (session.user as any).id,
+          userId: (session.user as { id: string }).id,
           category,
           month: month || new Date().getMonth() + 1,
           year: year || new Date().getFullYear(),
@@ -97,6 +98,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(budget);
   } catch (error) {
+    console.error('Budgets POST error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
@@ -117,12 +119,13 @@ export async function DELETE(req: Request) {
 
     await connectDB();
     await Budget.findOneAndUpdate(
-      { _id: id, userId: (session.user as any).id },
+      { _id: id, userId: (session.user as { id: string }).id },
       { isDeleted: true }
     );
 
     return NextResponse.json({ message: 'Budget deleted' });
   } catch (error) {
+    console.error('Budgets DELETE error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }

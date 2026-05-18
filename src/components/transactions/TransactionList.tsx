@@ -49,7 +49,7 @@ export default function TransactionList() {
       <CardContent className="flex-1 overflow-hidden flex flex-col">
         <div className="space-y-4 flex-1">
           {transactions.length > 0 ? (
-            transactions.map((tx: any) => (
+            transactions.map((tx: { _id: string; type: 'income' | 'expense'; category: string; date: string; amount: number }) => (
               <div key={tx._id} className="group flex items-center justify-between p-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
                 <div className="flex items-center gap-4">
                   <div className={cn(

@@ -3,7 +3,6 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/db';
 import Transaction from '@/models/Transaction';
-import mongoose from 'mongoose';
 
 export async function GET(req: Request) {
   try {
@@ -20,7 +19,10 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const skip = (page - 1) * limit;
 
-    const query: any = { userId: (session.user as any).id, isDeleted: false };
+    const query: { userId: string; isDeleted: boolean; type?: string; category?: string } = {
+      userId: (session.user as { id: string }).id,
+      isDeleted: false,
+    };
     if (type) query.type = type;
     if (category) query.category = category;
 
@@ -39,6 +41,7 @@ export async function GET(req: Request) {
       },
     });
   } catch (error) {
+    console.error('Transactions GET error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
@@ -59,7 +62,7 @@ export async function POST(req: Request) {
     await connectDB();
 
     const transaction = await Transaction.create({
-      userId: (session.user as any).id,
+      userId: (session.user as { id: string }).id,
       type,
       amount,
       category,
@@ -69,6 +72,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(transaction, { status: 201 });
   } catch (error) {
+    console.error('Transactions POST error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }

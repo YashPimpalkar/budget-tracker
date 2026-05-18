@@ -5,12 +5,11 @@ import connectDB from '@/lib/db';
 import Transaction from '@/models/Transaction';
 import Budget from '@/models/Budget';
 import User from '@/models/User';
-import mongoose from 'mongoose';
 
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== 'ADMIN') {
+    if (!session || (session.user as { role?: string }).role !== 'ADMIN') {
       return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
     }
 
@@ -24,11 +23,11 @@ export async function GET(req: Request) {
     const skip = (page - 1) * limit;
 
     // Filter by email if provided (requires finding user first or using aggregation)
-    let userFilter: any = {};
+    const userFilter: { userId?: string } = {};
     if (email) {
       const user = await User.findOne({ email: { $regex: email, $options: 'i' } });
       if (user) {
-        userFilter.userId = user._id;
+        userFilter.userId = user._id.toString();
       } else {
         // If email provided but user not found, return empty
         return NextResponse.json({ transactions: [], budgets: [], pagination: { total: 0, page, limit, pages: 0 } });
@@ -56,6 +55,7 @@ export async function GET(req: Request) {
       },
     });
   } catch (error) {
+    console.error('Admin recover GET error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
@@ -63,7 +63,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== 'ADMIN') {
+    if (!session || (session.user as { role?: string }).role !== 'ADMIN') {
       return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
     }
 
@@ -85,6 +85,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: 'Item recovered successfully' });
   } catch (error) {
+    console.error('Admin recover POST error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }

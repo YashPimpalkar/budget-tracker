@@ -3,10 +3,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { ArrowUpCircle, ArrowDownCircle, Wallet, History, Calendar, LayoutGrid } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, Wallet, History } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
-import { useAppSelector } from '@/store/hooks';
 import { cn } from '@/lib/utils';
 import { DashboardFilters } from '@/components/dashboard/DashboardFilters';
 
@@ -18,7 +17,6 @@ const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: fa
 const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
 
 export default function DashboardPage() {
-  const theme = useAppSelector((state) => state.ui.theme);
   const [mounted, setMounted] = useState(false);
   const [timeframe, setTimeframe] = useState<'monthly' | 'yearly' | 'total'>('monthly');
   const [month, setMonth] = useState(new Date().getMonth());
@@ -27,6 +25,7 @@ export default function DashboardPage() {
   const [to, setTo] = useState(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -163,14 +162,20 @@ export default function DashboardPage() {
                   />
                   {/* Two separate Bars — one per category — each using its own CSS var */}
                   <Bar
-                    dataKey={(d) => d.name === 'Income' ? d.value : 0}
+                    dataKey={(d: unknown) => {
+                      const item = d as { name: string; value: number };
+                      return item.name === 'Income' ? item.value : 0;
+                    }}
                     name="Income"
                     fill="var(--chart-income)"
                     radius={[4, 4, 0, 0]}
                     animationDuration={1000}
                   />
                   <Bar
-                    dataKey={(d) => d.name === 'Expenses' ? d.value : 0}
+                    dataKey={(d: unknown) => {
+                      const item = d as { name: string; value: number };
+                      return item.name === 'Expenses' ? item.value : 0;
+                    }}
                     name="Expenses"
                     fill="var(--chart-expenses)"
                     radius={[4, 4, 0, 0]}
@@ -196,7 +201,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="space-y-4">
               {data?.recentTransactions?.length > 0 ? (
-                data.recentTransactions.map((tx: any) => (
+                data.recentTransactions.map((tx: { _id: string; category: string; date: string; type: 'income' | 'expense'; amount: number }) => (
                   <div key={tx._id} className="flex items-center justify-between group">
                     <div>
                       <p className="text-sm font-medium dark:text-zinc-200">{tx.category}</p>

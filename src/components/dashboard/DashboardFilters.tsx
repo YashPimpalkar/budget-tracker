@@ -34,14 +34,14 @@ export function DashboardFilters({
       <div className="flex flex-wrap items-center gap-4">
         {/* Mode Switcher */}
         <div className="flex bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-lg border border-zinc-200 dark:border-zinc-700">
-          {[
+          {([
             { id: 'monthly', label: 'Monthly', icon: Calendar },
             { id: 'yearly', label: 'Yearly', icon: Calendar },
             { id: 'total', label: 'Range', icon: LayoutGrid },
-          ].map((tf) => (
+          ] as const).map((tf) => (
             <button
               key={tf.id}
-              onClick={() => setType(tf.id as any)}
+              onClick={() => setType(tf.id)}
               className={cn(
                 "flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200",
                 type === tf.id

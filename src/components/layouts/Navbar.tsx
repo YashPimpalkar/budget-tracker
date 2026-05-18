@@ -6,8 +6,6 @@ import { toggleSidebar, toggleTheme } from '@/store/slices/uiSlice';
 import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '../ui/Button';
-import { cn } from '@/lib/utils';
 
 export default function Navbar() {
   const dispatch = useAppDispatch();

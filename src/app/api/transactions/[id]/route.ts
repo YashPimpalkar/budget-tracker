@@ -17,7 +17,7 @@ export async function DELETE(
 
     await connectDB();
     const transaction = await Transaction.findOneAndUpdate(
-      { _id: id, userId: (session.user as any).id },
+      { _id: id, userId: (session.user as { id: string }).id },
       { isDeleted: true },
       { new: true }
     );
@@ -28,6 +28,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Transaction deleted' });
   } catch (error) {
+    console.error('Transactions delete error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }

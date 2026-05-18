@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     }
 
     await connectDB();
-    const userId = new mongoose.Types.ObjectId((session.user as any).id);
+    const userId = new mongoose.Types.ObjectId((session.user as { id: string }).id);
 
     let startDate: Date | undefined;
     let endDate: Date | undefined;
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     }
 
     const getStats = async (start?: Date, end?: Date) => {
-      const match: any = { userId, isDeleted: false };
+      const match: { userId: mongoose.Types.ObjectId; isDeleted: boolean; date?: { $gte?: Date; $lte?: Date } } = { userId, isDeleted: false };
       if (start || end) {
         match.date = {};
         if (start) match.date.$gte = start;

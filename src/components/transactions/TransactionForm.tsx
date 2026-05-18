@@ -98,8 +98,8 @@ export default function TransactionForm() {
               >
                 <option value="" disabled>Select category</option>
                 {Array.from(
-                  new Set(budgets?.map((b: any) => b.category) || [])
-                ).map((category: any) => (
+                  new Set((budgets as Array<{ category: string }> | undefined)?.map((b) => b.category) || [])
+                ).map((category) => (
                   <option key={category} value={category}>
                     {category}
                   </option>

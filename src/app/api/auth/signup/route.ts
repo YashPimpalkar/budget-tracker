@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       { message: 'User created successfully', user: { id: user._id, email: user.email } },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
